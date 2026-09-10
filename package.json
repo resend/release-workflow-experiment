@@ -1,6 +1,6 @@
 {
   "name": "release-workflow-experiment",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Throwaway package for the Resend release process POC",
   "main": "index.js",
   "files": [

@@ -1,10 +1,10 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Point the README at the results\n"
-    filename: readme-results.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Say which line this README belongs to\n"
+    filename: readme-line.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - readme-results.md
+      - readme-line.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
