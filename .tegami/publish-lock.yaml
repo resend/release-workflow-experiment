@@ -1,10 +1,10 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: minor\n---\n\n## Add shout()\n\nLike greet(), louder.\n"
-    filename: add-shout.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Add whisper()\n"
+    filename: add-whisper.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - add-shout.md
+      - add-whisper.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
