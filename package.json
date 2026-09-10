@@ -1,6 +1,6 @@
 {
   "name": "release-workflow-experiment",
-  "version": "1.1.0-canary.0",
+  "version": "1.1.0-canary.1",
   "description": "Throwaway package for the Resend release process POC",
   "main": "index.js",
   "files": [

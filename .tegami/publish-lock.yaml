@@ -1,10 +1,10 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: minor\n---\n\n## Add greet()\n\nReturns a greeting for a name.\n"
-    filename: add-greet.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Fix greet() punctuation\n"
+    filename: fix-greet.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - add-greet.md
+      - fix-greet.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
