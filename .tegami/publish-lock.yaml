@@ -1,12 +1,12 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n# The module no longer is the version string\n\nUse `.version` instead.\n"
-    filename: major-2.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: minor\n---\n\n## Add mumble()\n"
+    filename: add-mumble.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - major-2.md
+      - add-mumble.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: latest
+  - distTag: canary
     id: npm:release-workflow-experiment
