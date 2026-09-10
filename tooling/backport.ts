@@ -27,8 +27,9 @@ function branchFor(bump: string | undefined, target: string) {
 }
 
 function highestTag(target: string) {
-  const tags = git("tag", "--list", `v${target}.*`, "--sort=-v:refname").split("\n").filter((t) => t && !t.includes("-"));
-  if (!tags[0]) throw new Error(`no stable tag matching v${target}.*`);
+  const prefix = `release-workflow-experiment@${target}.`;
+  const tags = git("tag", "--list", `${prefix}*`, "--sort=-v:refname").split("\n").filter((t) => t && !t.includes("-", prefix.length));
+  if (!tags[0]) throw new Error(`no stable tag matching ${prefix}*`);
   return tags[0];
 }
 
@@ -36,6 +37,7 @@ function prFor(sha: string) {
   return gh("pr", "list", "--search", sha, "--state", "merged", "--json", "number,author", "--jq", ".[0] | \"\\(.number) \\(.author.login)\"");
 }
 
+if (/^0+$/.test(before)) process.exit(0);
 const commits = git("rev-list", "--reverse", `${before}..${after}`).split("\n").filter(Boolean);
 let failed = false;
 

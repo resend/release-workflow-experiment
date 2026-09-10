@@ -63,7 +63,7 @@ jobs:
 
       - name: Mark GitHub release as not latest
         if: steps.tegami.outputs.published == 'true' && steps.tegami.outputs.took_latest == 'false' && github.ref_name != 'canary'
-        run: gh release edit "v$(node -p "require('./package.json').version")" --latest=false
+        run: gh release edit "$(node -p "p=require('./package.json');p.name+'@'+p.version")" --latest=false
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
 
