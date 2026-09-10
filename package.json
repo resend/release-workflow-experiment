@@ -1,0 +1,13 @@
+{
+  "name": "release-workflow-experiment",
+  "version": "1.0.0",
+  "description": "Throwaway package for the Resend release process POC",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

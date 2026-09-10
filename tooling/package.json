@@ -1,0 +1,14 @@
+{
+  "name": "tooling",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "semver": "7.8.5",
+    "tegami": "1.5.0",
+    "tsx": "4.23.13"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.2",
+    "@types/semver": "7.8.0"
+  }
+}

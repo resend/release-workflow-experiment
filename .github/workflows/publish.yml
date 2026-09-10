@@ -1,0 +1,60 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+      - canary
+      - release-*
+  workflow_dispatch:
+
+concurrency:
+  group: publish-${{ github.ref_name }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: pnpm --dir tooling install --frozen-lockfile
+
+      - id: tegami
+        run: pnpm --dir tooling exec tsx tegami.mts ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Mark GitHub release as not latest
+        if: steps.tegami.outputs.published == 'true' && steps.tegami.outputs.took_latest == 'false' && github.ref_name != 'canary'
+        run: gh release edit "v$(node -p "require('./package.json').version")" --latest=false
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Fast-forward main to canary
+        if: github.ref_name == 'canary' && steps.tegami.outputs.exit_prerelease == 'true'
+        run: git push origin HEAD:main
+
+      - name: Reset release-<major> to main
+        if: github.ref_name == 'main' && steps.tegami.outputs.published == 'true'
+        run: git push --force origin HEAD:release-$(node -p "require('semver/functions/major')(require('./package.json').version)")
+
+      - name: Re-draft canary
+        if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'
+        run: gh workflow run publish.yml --ref canary
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}

@@ -1,0 +1,30 @@
+import path from "node:path";
+import { tegami } from "tegami";
+import { runCli } from "tegami/cli";
+import { github } from "tegami/plugins/github";
+import { releaseLines, currentBranch } from "./plugins/release-lines.ts";
+import { exitPrerelease } from "./plugins/exit-prerelease.ts";
+
+const cwd = path.resolve(import.meta.dirname, "..");
+const branch = currentBranch();
+const isCanary = branch === "canary";
+
+const paper = tegami({
+  cwd,
+  packages: () => ({
+    prerelease: isCanary ? "canary" : undefined,
+  }),
+  npm: {
+    trustedPublish: { provider: "github", workflow: "publish.yml" },
+  },
+  plugins: [
+    github({
+      repo: "gabrielmfern/release-workflow-experiment",
+      versionPr: branch === "main" ? false : { base: branch, branch: `tegami/version-packages-${branch}` },
+    }),
+    releaseLines(branch),
+    exitPrerelease(),
+  ],
+});
+
+await runCli(paper);

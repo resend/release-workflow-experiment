@@ -1,0 +1,35 @@
+name: Backport
+
+on:
+  push:
+    branches:
+      - canary
+
+jobs:
+  backport:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: pnpm --dir tooling install --frozen-lockfile
+
+      - run: |
+          git config user.name "release-bot"
+          git config user.email "release-bot@users.noreply.github.com"
+          pnpm --dir tooling exec tsx backport.ts ${{ github.event.before }} ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
