@@ -1,20 +1,14 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Add whisper()\n"
-    filename: add-whisper.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Expose whisper() from the main entry\n"
-    filename: graduate-1-3.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Point the README at the results\n"
-    filename: readme-results.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: major\n---\n\n# The module no longer is the version string\n\nUse `.version` instead.\n"
+    filename: major-2.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - add-whisper.md
-      - graduate-1-3.md
-      - readme-results.md
+      - major-2.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: latest
+  - distTag: canary
     id: npm:release-workflow-experiment
+resend:exit-prerelease:
+  - requested: true

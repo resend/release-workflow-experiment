@@ -1,7 +1,8 @@
 ---
 packages:
-  npm:release-workflow-experiment: major
-exit-prerelease: true
+  npm:release-workflow-experiment:
+    replay:
+      - exit-prerelease(npm:release-workflow-experiment)
 ---
 
 # The module no longer is the version string
