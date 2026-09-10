@@ -44,3 +44,22 @@ Done. PR 14 added a README with a patch changeset and `backport-to: [1.0]`. On m
 - Registry lag again: `1.0.1` took minutes to show under `latest` on the read endpoints.
 
 PRs: https://github.com/resend/release-workflow-experiment/pull/14 and https://github.com/resend/release-workflow-experiment/pull/15. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34524276616
+
+## Scenario 3: exit prerelease
+
+Done, with one retry caused by registry lag. PR 17 carried `exit-prerelease: true`. The Version Packages PR on canary was titled "Version Packages (exit prerelease: promotes canary to stable)" and its lock had `resend:exit-prerelease: requested: true`. Merging it published `1.1.0-canary.3` and the workflow fast-forwarded `main`.
+
+The first run on `main` failed twice over:
+
+- `tegami version` refused to draft because the lock it inherited from canary looked pending. Canary had published `1.1.0-canary.3` a minute earlier, but the registry did not show it yet.
+- `tegami publish` then tried to publish `1.1.0-canary.3` again from `main`, for the same reason, and npm rejected the duplicate.
+
+Rerunning the same job once the registry caught up did everything: `tegami version` drafted `1.1.0`, committed "Release 1.1.0 [skip ci]", published it as `latest`, and reset `release-1` to `main`. The fix is `--no-checks` on `main`'s version step. The lock main inherits is canary's and canary is responsible for it. `main` never publishes a prerelease, so the check adds nothing there.
+
+A gap the RFC does not cover: after graduation canary sat at `1.1.0-canary.3` while `main` shipped `1.1.0`. Canary's next changeset would draft `1.1.0-canary.4`, below stable. `main` has to fast-forward canary to its release commit after publishing, so canary's next bump starts from `1.1.0` and drafts `1.2.0-canary.0`. The workflow does that now, with a merge PR as fallback when canary moved in between. For this run I merged `main` into canary by hand with a merge commit.
+
+`main`'s new lock still carries `resend:exit-prerelease: requested: true`, inherited from canary's lock. Harmless, the fast-forward step only runs on canary, but the plugin should reset it.
+
+The stored copy of the changeset in the lock drops the `exit-prerelease` key, as predicted in the RFC. Recording it in the lock at draft time is what made the publish step see it.
+
+PR: https://github.com/resend/release-workflow-experiment/pull/18. Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34524683266 (canary) and https://github.com/resend/release-workflow-experiment/actions/runs/34524720200 (main, second attempt).

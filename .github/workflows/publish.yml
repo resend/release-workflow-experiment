@@ -52,7 +52,7 @@ jobs:
       - name: Version and commit on main
         if: github.ref_name == 'main'
         run: |
-          pnpm --dir tooling exec tsx tegami.mts version
+          pnpm --dir tooling exec tsx tegami.mts version --no-checks
           if ! git diff --quiet; then
             git add -A
             git commit -m "Release $(node -p "require('./package.json').version") [skip ci]"
@@ -84,6 +84,15 @@ jobs:
       - name: Reset release-<major> to main
         if: github.ref_name == 'main' && steps.tegami.outputs.published == 'true'
         run: git push --force origin HEAD:release-$(node -p "require('./package.json').version.split('.')[0]")
+
+      - name: Fast-forward canary to main
+        if: github.ref_name == 'main' && steps.tegami.outputs.published == 'true'
+        run: |
+          if ! git push origin HEAD:canary; then
+            gh pr create --base canary --head main --title "Sync canary with main after $(node -p "require('./package.json').version")" --body "Canary moved during the release. Merge with a merge commit, not squash."
+          fi
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
 
       - name: Re-draft canary
         if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'
