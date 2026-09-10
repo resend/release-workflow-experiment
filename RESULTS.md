@@ -14,3 +14,12 @@
 - `npm view` lagged about a minute behind the publish. tegami's own status check reads the registry directly and was right. Don't trust `npm view` right after a publish.
 - `tegami pr comment` only runs from a `workflow_run` event, so the preview needs the two-workflow split from tegami's CI docs, not a single job.
 - First stable release worked end to end: `1.0.0` on npm as `latest`, GitHub release `release-workflow-experiment@1.0.0`, `release-1` created pointing at `main`. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34522112600
+- Registry lag is worse than a minute. `1.1.0-canary.0` was published at 19:49 and the registry's own `time` field says 19:56. Seven minutes where `npm view`, the dist-tags endpoint and the version endpoint all returned 404 while tegami had a 200 from `npm publish`. Anything in our workflow that reads npm right after a publish, the dist-tag rule included, has to tolerate this. We publish with the pnpm client now, which changes nothing about the lag.
+- The ruleset lets the app do everything and blocks humans, including me, from pushing to `main`, `canary` and `release-*`. Every fix in this POC went through a PR, which is the process working.
+
+## Scenario 1: normal canary
+
+Done. Two changesets, two Version Packages PRs opened by the app, `1.1.0-canary.0` then `1.1.0-canary.1` on npm under `canary`, `latest` stayed at `1.0.0`. Both consumed changesets were rewritten to replay-only entries. The PR preview comment posts once the preview and comment jobs are split.
+
+- https://github.com/resend/release-workflow-experiment/pull/5
+- https://github.com/resend/release-workflow-experiment/pull/8
