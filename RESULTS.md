@@ -12,4 +12,5 @@
 - `tegami pr preview --artifact` and `pr comment` resolve the path against different directories when run with `pnpm --dir`. Use an absolute path.
 - tegami tags npm packages as `name@version` (`release-workflow-experiment@1.0.0`) with no option to change it. Our SDKs use `vX.Y.Z` today. Either we accept the new format at onboarding or send a `tagPrefix` option upstream, the composer and go plugins already have one.
 - `npm view` lagged about a minute behind the publish. tegami's own status check reads the registry directly and was right. Don't trust `npm view` right after a publish.
+- `tegami pr comment` only runs from a `workflow_run` event, so the preview needs the two-workflow split from tegami's CI docs, not a single job.
 - First stable release worked end to end: `1.0.0` on npm as `latest`, GitHub release `release-workflow-experiment@1.0.0`, `release-1` created pointing at `main`. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34522112600
