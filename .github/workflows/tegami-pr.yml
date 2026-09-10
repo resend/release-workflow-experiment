@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   preview:
@@ -28,6 +27,7 @@ jobs:
 
       - run: pnpm --dir tooling exec tsx tegami.mts pr preview --artifact $RUNNER_TEMP/preview.md
 
-      - run: pnpm --dir tooling exec tsx tegami.mts pr comment $RUNNER_TEMP/preview.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tegami-pr-preview
+          path: ${{ runner.temp }}/preview.md
