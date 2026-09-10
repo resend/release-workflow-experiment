@@ -7,6 +7,11 @@ on:
       - canary
       - release-*
   workflow_dispatch:
+    inputs:
+      debug:
+        description: Run npm publish directly with verbose output instead of tegami
+        type: boolean
+        default: false
 
 concurrency:
   group: publish-${{ github.ref_name }}
@@ -56,7 +61,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app.outputs.token }}
 
+      - name: Debug npm publish
+        if: inputs.debug
+        run: pnpm publish --tag debug --no-git-checks --loglevel debug
+
       - id: tegami
+        if: ${{ !inputs.debug }}
         run: pnpm --dir tooling exec tsx tegami.mts ${{ github.ref_name == 'main' && 'publish' || 'ci' }}
         env:
           GITHUB_TOKEN: ${{ steps.app.outputs.token }}
