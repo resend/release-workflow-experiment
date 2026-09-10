@@ -1,12 +1,12 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Add a README\n\nThe npm page had no description.\n"
-    filename: add-readme.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Point the README at the results\n"
+    filename: readme-results.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - add-readme.md
+      - readme-results.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: latest
+  - distTag: release-1.0
     id: npm:release-workflow-experiment
