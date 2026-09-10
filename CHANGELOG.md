@@ -1,3 +1,9 @@
+## release-workflow-experiment@1.1.0-canary.3 (canary)
+
+### Export the version as a named export too
+
+`require("release-workflow-experiment").version` now works.
+
 ## release-workflow-experiment@1.1.0-canary.2 (canary)
 
 ### Add a README

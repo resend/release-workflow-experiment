@@ -1,7 +1,8 @@
 ---
 packages:
-  npm:release-workflow-experiment: patch
-exit-prerelease: true
+  npm:release-workflow-experiment:
+    replay:
+      - exit-prerelease(npm:release-workflow-experiment)
 ---
 
 ### Export the version as a named export too
