@@ -1,12 +1,12 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: major\n---\n\n## Initial release\n"
-    filename: initial-release.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: minor\n---\n\n## Add greet()\n\nReturns a greeting for a name.\n"
+    filename: add-greet.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - initial-release.md
+      - add-greet.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: latest
+  - distTag: canary
     id: npm:release-workflow-experiment
