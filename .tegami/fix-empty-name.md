@@ -1,7 +1,8 @@
 ---
 packages:
-  npm:release-workflow-experiment: patch
-backport-to: [1.0]
+  npm:release-workflow-experiment:
+    replay:
+      - exit-prerelease(npm:release-workflow-experiment)
 ---
 
 ### Handle an empty name in greet()
