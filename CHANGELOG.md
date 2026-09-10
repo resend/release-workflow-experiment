@@ -1,3 +1,9 @@
+## release-workflow-experiment@2.0.0-canary.0 (canary)
+
+### The module no longer is the version string
+
+Use `.version` instead.
+
 ## release-workflow-experiment@1.3.0
 
 ### Add whisper()
