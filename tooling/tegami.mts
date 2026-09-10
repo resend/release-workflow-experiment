@@ -3,7 +3,7 @@ import { tegami } from "tegami";
 import { runCli } from "tegami/cli";
 import { github } from "tegami/plugins/github";
 import { releaseLines, currentBranch } from "./plugins/release-lines.ts";
-import { exitPrerelease } from "./plugins/exit-prerelease.ts";
+import { exitPrerelease, exitPrereleaseRequested } from "./plugins/exit-prerelease.ts";
 
 const cwd = path.resolve(import.meta.dirname, "..");
 const branch = currentBranch();
@@ -21,7 +21,16 @@ const paper = tegami({
   },
   plugins: [
     github({
-      versionPr: branch === "main" ? false : { base: branch, branch: `tegami/version-packages-${branch}` },
+      versionPr:
+        branch === "main"
+          ? false
+          : {
+              base: branch,
+              branch: `tegami/version-packages-${branch}`,
+              create: () => ({
+                title: exitPrereleaseRequested() ? "Version Packages (exit prerelease: promotes canary to stable)" : undefined,
+              }),
+            },
     }),
     releaseLines(branch),
     exitPrerelease(),
