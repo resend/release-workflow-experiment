@@ -8,7 +8,7 @@ RFC: https://app.notion.com/p/resend/3a4c40d6c4ef80a0881af029c3f1ca7f
 
 A throwaway npm package, `release-workflow-experiment`, with one file that exports its own version. Nothing else. Every scenario below ends in a version on npm and a run in Actions we can link to.
 
-Out of scope for the POC: the GitHub App, org rulesets, other languages. Pushes use a fine-grained PAT stored as a repo secret. The rest is real.
+Out of scope for the POC: org rulesets, other languages. A GitHub App installed on this repo does every push and PR, the same way the org-level app will. The rest is real.
 
 ## Layout
 

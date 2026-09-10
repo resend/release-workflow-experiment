@@ -12,10 +12,16 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TOKEN }}
+          token: ${{ steps.app.outputs.token }}
 
       - uses: pnpm/action-setup@v4
         with:
@@ -32,4 +38,4 @@ jobs:
           git config user.email "release-bot@users.noreply.github.com"
           pnpm --dir tooling exec tsx backport.ts ${{ github.event.before }} ${{ github.sha }}
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
