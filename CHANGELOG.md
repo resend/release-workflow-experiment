@@ -1,3 +1,11 @@
+## release-workflow-experiment@1.3.0-canary.1 (canary)
+
+### Add whisper()
+
+
+
+### Expose whisper() from the main entry
+
 ## release-workflow-experiment@1.1.1-canary.0 (canary)
 
 ### Point the README at the results
