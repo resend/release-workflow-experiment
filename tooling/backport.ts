@@ -66,6 +66,7 @@ for (const sha of commits) {
           git("checkout", "-B", branch, `origin/${branch}`);
         } else {
           git("checkout", "-b", branch, /^\d+$/.test(target) ? "origin/main" : highestTag(target));
+          git("push", "origin", branch);
         }
         git("cherry-pick", "-x", sha);
         git("push", "origin", branch);

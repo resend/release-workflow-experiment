@@ -23,3 +23,14 @@ Done. Two changesets, two Version Packages PRs opened by the app, `1.1.0-canary.
 
 - https://github.com/resend/release-workflow-experiment/pull/5
 - https://github.com/resend/release-workflow-experiment/pull/8
+
+## Scenario 7: conflict (happened early, out of order)
+
+The first backport attempt, PR 11, conflicted. The fix touched `greet()`, which was added after `1.0.0`, so the hunk has no context on `release-1.0`. That is the RFC's second kind of conflict, a fix that depends on newer canary code. The bot created `release-1.0` locally, failed the cherry-pick, commented on the PR tagging the author with the manual commands, and failed the run. Nothing was pushed to any release branch.
+
+Two things learned:
+
+- The comment told the author to branch from `origin/release-1.0`, which the bot never pushed. The script now pushes a newly created release branch before cherry-picking, so the human has a base even when the pick fails.
+- I bundled `RESULTS.md` edits into the fix commit, and that file conflicted too. A commit carrying `backport-to` should contain the fix and its changeset, nothing else. Docs go in their own PR.
+
+Run: https://github.com/resend/release-workflow-experiment/actions/runs/34523858760
