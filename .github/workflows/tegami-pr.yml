@@ -25,6 +25,9 @@ jobs:
 
       - run: pnpm --dir tooling install --frozen-lockfile
 
+      - name: Check changesets
+        run: pnpm --dir tooling exec tsx check-changesets.ts origin/${{ github.base_ref }} ${{ github.event.pull_request.head.sha }}
+
       - run: pnpm --dir tooling exec tsx tegami.mts pr preview --artifact $RUNNER_TEMP/preview.md
 
       - uses: actions/upload-artifact@v4
