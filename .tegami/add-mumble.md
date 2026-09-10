@@ -1,7 +1,8 @@
 ---
 packages:
-  npm:release-workflow-experiment: minor
-backport-to: [1]
+  npm:release-workflow-experiment:
+    replay:
+      - exit-prerelease(npm:release-workflow-experiment)
 ---
 
 ## Add mumble()
