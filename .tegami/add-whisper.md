@@ -1,7 +1,8 @@
 ---
 packages:
-  npm:release-workflow-experiment: patch
-backport-to: [1.2]
+  npm:release-workflow-experiment:
+    replay:
+      - exit-prerelease(npm:release-workflow-experiment)
 ---
 
 ### Add whisper()
