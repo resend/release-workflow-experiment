@@ -1,3 +1,9 @@
+## release-workflow-experiment@1.2.0
+
+### Add shout()
+
+Like greet(), louder.
+
 ## release-workflow-experiment@1.1.0
 
 ### Add greet()
