@@ -1,30 +1,12 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n## Add greet()\n\nReturns a greeting for a name.\n"
-    filename: add-greet.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Add a README\n\nThe npm page had no description.\n"
-    filename: add-readme.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Export the version as a named export too\n\n`require(\"release-workflow-experiment\").version` now works.\n"
-    filename: exit-prerelease.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Handle an empty name in greet()\n\nAn empty name now greets the world instead of nobody.\n"
-    filename: fix-empty-name.md
-    v: 0.0.0
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n### Fix greet() punctuation\n"
-    filename: fix-greet.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Point the README at the results\n"
+    filename: readme-results.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - add-greet.md
-      - add-readme.md
-      - exit-prerelease.md
-      - fix-empty-name.md
-      - fix-greet.md
+      - readme-results.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: latest
+  - distTag: canary
     id: npm:release-workflow-experiment
-resend:exit-prerelease:
-  - requested: true
