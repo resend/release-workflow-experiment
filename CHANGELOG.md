@@ -1,3 +1,7 @@
+## release-workflow-experiment@1.2.1
+
+### Add whisper()
+
 ## release-workflow-experiment@1.2.0
 
 ### Add shout()
