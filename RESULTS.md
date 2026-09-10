@@ -106,3 +106,27 @@ I merged PR 31 anyway to test the second line of defense. The Backport workflow 
 The check is not a required status in this repo's ruleset. It should be in the real one, so the merge-time refusal only ever fires for commits that reached canary some other way.
 
 PRs: https://github.com/resend/release-workflow-experiment/pull/31, https://github.com/resend/release-workflow-experiment/pull/32, https://github.com/resend/release-workflow-experiment/pull/33. Refusal run: https://github.com/resend/release-workflow-experiment/actions/runs/34526613060
+
+## Scenario 8: direct PR to a release branch
+
+Done. PR 35 was opened straight against `release-1.0` with a patch changeset and no canary involvement. tegami drafted `1.0.3` under the `release-1.0` dist-tag and it published. Canary and `main` never saw it.
+
+What it exposed: release branches run the copy of `publish.yml` and `tooling/` from their own tree. `release-1.0` was cut from the `1.0.0` tag and every fix since then lives on canary only, so its "mark release not latest" step is the old one without the retry, and it failed again. Cherry-picks carry the fix and its changeset, never workflow changes. This is the strongest argument for the RFC's design where the branch file is a five-line caller and the logic lives in public-shared-workflows, referenced by ref. It also means the POC's own release branches will keep running stale tooling for the rest of the scenarios.
+
+PRs: https://github.com/resend/release-workflow-experiment/pull/35 and https://github.com/resend/release-workflow-experiment/pull/37
+
+## Scenario 3 again, with the fixes in
+
+The graduation to `1.3.0` went through in one attempt. Canary published `1.3.0-canary.1`, fast-forwarded `main`, `main` drafted `1.3.0` with `--no-checks`, committed, published as `latest`, reset `release-1`, and fast-forwarded canary to the release commit. All three branches ended on the same commit.
+
+Run: https://github.com/resend/release-workflow-experiment/actions/runs/34527211905
+
+## Scenario 9: stale Version Packages PR
+
+Failed, and the failure is the one the RFC worried about. PR 38 on `release-1.2` was drafted while `latest` was `1.2.0`, so its lock said `latest`. Canary then graduated to `1.3.0`. Merging the stale PR published `1.2.1` as `latest`, on top of `1.3.0`.
+
+The publish-time recompute ran. It asked the npm registry for the current `latest` and the registry still said `1.2.0`, minutes after `1.3.0` was published. So the recompute agreed with the stale lock. Registry lag turned the safety net into a no-op. Repairing it takes a human with npm 2FA running `npm dist-tag add` twice, once to move `latest` back to `1.3.0` and once to put `1.2.1` under `release-1.2`.
+
+The fix: never ask the registry. The highest stable git tag is, by our own rule, what `latest` must point to, and tags are pushed in the same run that publishes. Both the draft-time and publish-time computations now read tags, the same way the canary-ahead plugin already did.
+
+Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34527284031
