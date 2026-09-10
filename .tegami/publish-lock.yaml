@@ -1,10 +1,14 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Fix greet() punctuation\n"
-    filename: fix-greet.md
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Add a README\n\nThe npm page had no description.\n"
+    filename: add-readme.md
+    v: 0.0.0
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: patch\n---\n\n### Handle an empty name in greet()\n\nAn empty name now greets the world instead of nobody.\n"
+    filename: fix-empty-name.md
     v: 0.0.0
 core:packages:
   - changelogIds:
-      - fix-greet.md
+      - add-readme.md
+      - fix-empty-name.md
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
