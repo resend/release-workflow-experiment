@@ -9,12 +9,13 @@ export function currentBranch(): string {
   return execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { encoding: "utf8" }).trim();
 }
 
-export function npmLatest(name: string): string | undefined {
-  try {
-    return execFileSync("npm", ["view", name, "dist-tags.latest"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || undefined;
-  } catch {
-    return undefined;
-  }
+export function highestStable(cwd: string, name: string): string | undefined {
+  execFileSync("git", ["fetch", "origin", "--tags", "--force", "--quiet"], { cwd });
+  const versions = execFileSync("git", ["tag", "--list", `${name}@*`], { cwd, encoding: "utf8" })
+    .split("\n")
+    .map((tag) => tag.slice(name.length + 1))
+    .filter((v) => semver.valid(v) && !semver.prerelease(v));
+  return semver.rsort(versions)[0];
 }
 
 export function distTagFor(branch: string, version: string, latest: string | undefined): string {
@@ -41,7 +42,7 @@ export function releaseLines(branch: string): TegamiPlugin {
         const next = d?.bumpVersion(pkg);
         if (!d || !next) continue;
         d.npm ??= {};
-        d.npm.distTag = distTagFor(branch, next, npmLatest(pkg.name));
+        d.npm.distTag = distTagFor(branch, next, highestStable(this.cwd, pkg.name));
       }
     },
     initPublishPlan({ plan }) {
@@ -50,7 +51,7 @@ export function releaseLines(branch: string): TegamiPlugin {
         const p = plan.packages.get(pkg.id);
         if (!p?.updated || !pkg.version) continue;
         p.npm ??= {};
-        p.npm.distTag = distTagFor(branch, pkg.version, npmLatest(pkg.name));
+        p.npm.distTag = distTagFor(branch, pkg.version, highestStable(this.cwd, pkg.name));
         if (p.npm.distTag === "latest") tookLatest = true;
       }
       githubOutput("took_latest", String(tookLatest));
