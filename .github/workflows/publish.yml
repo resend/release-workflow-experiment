@@ -73,6 +73,7 @@ jobs:
 
       - name: Re-draft canary
         if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'
+        continue-on-error: true
         run: gh workflow run publish.yml --ref canary
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}

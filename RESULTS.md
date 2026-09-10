@@ -130,3 +130,29 @@ The publish-time recompute ran. It asked the npm registry for the current `lates
 The fix: never ask the registry. The highest stable git tag is, by our own rule, what `latest` must point to, and tags are pushed in the same run that publishes. Both the draft-time and publish-time computations now read tags, the same way the canary-ahead plugin already did.
 
 Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34527284031
+
+## Scenario 10: LTS
+
+Done. PR 43 carried a major with `exit-prerelease: true`. Canary drafted `2.0.0-canary.0`, graduated, `main` published `2.0.0` as `latest`, `release-2` was created at that commit, and `release-1` stayed at `1.3.0`. Then PR 44 added a minor with `backport-to: [1]`. The bot cherry-picked it onto `release-1`, tegami drafted `1.4.0` under the `release-1` dist-tag, and it published. `latest` stayed `2.0.0`. Canary drafted `2.1.0-canary.0` and kept `add-mumble.md`, since `1.4.0` is below canary's line and the entry belongs in `2.1.0`'s changelog too.
+
+The GitHub release for `1.4.0` was marked Latest again. `release-1` is frozen at `1.3.0`'s copy of the workflow, where a failed canary dispatch skips the marking step. Same root cause as scenario 8, and it will stay that way for every LTS branch in this repo. In the real design the branch file is a caller and this never happens.
+
+PRs: https://github.com/resend/release-workflow-experiment/pull/43, https://github.com/resend/release-workflow-experiment/pull/44, https://github.com/resend/release-workflow-experiment/pull/46. Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34527644222 (main, 2.0.0), https://github.com/resend/release-workflow-experiment/actions/runs/34527880320 (release-1, 1.4.0)
+
+## What changes in the RFC
+
+All ten scenarios ran against real npm and real GitHub. The model holds. These are the things the RFC has to say differently.
+
+- **Never read the registry for a decision.** It lags publishes by one to seven minutes. The dist-tag rule, the canary-ahead plugin and `main`'s lock check all broke on it. Git tags are pushed in the same run that publishes and are the source of truth for "highest stable".
+- **`main` needs three steps the RFC did not list.** Run `tegami version --no-checks` and commit the bump itself, since there is no Version Packages PR there. Then fast-forward canary to the release commit, or canary's next draft sits below stable. The `release-<major>` reset was already in the RFC.
+- **Release branches run stale tooling** if the tooling lives in the repo. Every release branch here is frozen at the tooling of the tag it was cut from. The reusable workflow in public-shared-workflows is not a convenience, it is what makes fixes reach `release-1.0` at all.
+- **Canary re-draft needs the Actions permission** on the app. Without it, canary catches up only on its next push, and a stale canary version PR could be merged in between.
+- **The GitHub Latest release needs `make_latest` at creation**, not a patch afterwards. GitHub's release-by-tag lookup lags creation and the patch step raced it twice. Upstream PR to tegami.
+- **Changeset bodies must start with a heading.** A frontmatter-only file is silently ignored. Every template and the agent skill need this.
+- **Trusted publishing needs `repository.url`** in every `package.json`, and tegami's `pretrust` does not work with current npm. Set trust up by hand per package until upstream fixes it.
+- **Tags are `name@version`.** No option in tegami for npm. Decide at onboarding whether we live with it.
+- **Humans can create `release-*` branches.** The ruleset guards updates, not creation. Probably fine, the bot creates them too.
+- **The PR changeset check should be a required status.** Then the merge-time refusal is a backstop, not the gate.
+- **A `backport-to` commit carries the fix and its changeset only.** Anything else in the commit is a conflict waiting to happen. Docs go in their own PR.
+
+Upstream issues to open on tegami: prerelease line moving past a published stable, `make_latest` on GitHub releases, heading-less changesets ignored silently, `pretrust` and npm 12's `npm trust` syntax, `tagPrefix` for npm.
