@@ -11,8 +11,13 @@ function hasKey(content: string) {
   return /^exit-prerelease:\s*true\s*$/m.test(fm);
 }
 
+let requested = false;
+
+export function exitPrereleaseRequested() {
+  return requested;
+}
+
 export function exitPrerelease(): TegamiPlugin {
-  let requested = false;
   return {
     name: KEY,
     initCliDraft(draft) {
