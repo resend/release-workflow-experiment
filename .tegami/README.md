@@ -8,10 +8,12 @@ packages:
   npm:release-workflow-experiment: patch
 ---
 
-Fix domain SPF records rejecting CNAME
+## Fix domain SPF records rejecting CNAME
+
+Optional details under the heading.
 ```
 
-`patch`, `minor` or `major`. The body is the changelog entry.
+`patch`, `minor` or `major`. The body is the changelog entry and it must start with a heading, tegami ignores the file otherwise.
 
 ## Ship it to a stable line now
 

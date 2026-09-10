@@ -40,7 +40,7 @@ RESULTS.md          one entry per scenario: what happened, links, what broke
 4. `tooling/tegami.mts` with the branch table from tegami's multi-version guide, but `release-*` matched by pattern instead of listed. `cwd` is the repo root.
 5. `.tegami/README.md` with the changeset template and the two keys.
 6. The three workflows. `publish.yml` lists `main`, `canary`, `release-*`.
-7. Commit to `main`, publish `1.0.0` as `latest`. Create `canary` from it and make it the default branch.
+7. Package starts at `0.0.0` with a `major` changeset. `main` has no Version Packages PR, so its workflow runs `tegami version`, commits and pushes the bump itself, then `tegami publish`. First push to `main` publishes `1.0.0` as `latest`. Create `canary` from it and make it the default branch.
 
 ## Scenarios
 

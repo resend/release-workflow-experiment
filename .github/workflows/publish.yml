@@ -34,8 +34,24 @@ jobs:
 
       - run: pnpm --dir tooling install --frozen-lockfile
 
+      - run: |
+          git config user.name "release-bot"
+          git config user.email "release-bot@users.noreply.github.com"
+
+      - name: Version and commit on main
+        if: github.ref_name == 'main'
+        run: |
+          pnpm --dir tooling exec tsx tegami.mts version
+          if ! git diff --quiet; then
+            git add -A
+            git commit -m "Release $(node -p "require('./package.json').version") [skip ci]"
+            git push origin HEAD:main
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
       - id: tegami
-        run: pnpm --dir tooling exec tsx tegami.mts ci
+        run: pnpm --dir tooling exec tsx tegami.mts ${{ github.ref_name == 'main' && 'publish' || 'ci' }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
@@ -51,7 +67,7 @@ jobs:
 
       - name: Reset release-<major> to main
         if: github.ref_name == 'main' && steps.tegami.outputs.published == 'true'
-        run: git push --force origin HEAD:release-$(node -p "require('semver/functions/major')(require('./package.json').version)")
+        run: git push --force origin HEAD:release-$(node -p "require('./package.json').version.split('.')[0]")
 
       - name: Re-draft canary
         if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'

@@ -15,6 +15,7 @@ const paper = tegami({
     prerelease: isCanary ? "canary" : undefined,
   }),
   npm: {
+    updateLockFile: false,
     trustedPublish: { provider: "github", workflow: "publish.yml" },
   },
   plugins: [
