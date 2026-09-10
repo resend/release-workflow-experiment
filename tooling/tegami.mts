@@ -20,7 +20,6 @@ const paper = tegami({
   },
   plugins: [
     github({
-      repo: "gabrielmfern/release-workflow-experiment",
       versionPr: branch === "main" ? false : { base: branch, branch: `tegami/version-packages-${branch}` },
     }),
     releaseLines(branch),
