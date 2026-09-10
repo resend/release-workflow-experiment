@@ -34,3 +34,13 @@ Two things learned:
 - I bundled `RESULTS.md` edits into the fix commit, and that file conflicted too. A commit carrying `backport-to` should contain the fix and its changeset, nothing else. Docs go in their own PR.
 
 Run: https://github.com/resend/release-workflow-experiment/actions/runs/34523858760
+
+## Scenario 2: patch backport before the next stable
+
+Done. PR 14 added a README with a patch changeset and `backport-to: [1.0]`. On merge the Backport workflow cherry-picked it onto `release-1.0`, tegami opened a Version Packages PR there for `1.0.1` with dist-tag `latest`, and merging it published `1.0.1` as `latest` with the GitHub release marked Latest. Canary's own Version Packages PR stayed at `1.1.0-canary.2` and was untouched by any of it.
+
+- The "Re-draft canary" step failed with 403. The app needs the Actions permission to dispatch a workflow. Nothing was lost here because `1.0.1` is below canary, but scenario 5 depends on this step.
+- `release-1.0` was created by hand from the `1.0.0` tag, since the ruleset only guards updates. Humans can create `release-*` branches. Whether to add a `creation` rule is an open question, the bot needs to create them too.
+- Registry lag again: `1.0.1` took minutes to show under `latest` on the read endpoints.
+
+PRs: https://github.com/resend/release-workflow-experiment/pull/14 and https://github.com/resend/release-workflow-experiment/pull/15. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34524276616
