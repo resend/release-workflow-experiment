@@ -26,8 +26,8 @@ jobs:
 
       - run: pnpm --dir tooling install --frozen-lockfile
 
-      - run: pnpm --dir tooling exec tsx tegami.mts pr preview --artifact preview.md
+      - run: pnpm --dir tooling exec tsx tegami.mts pr preview --artifact $RUNNER_TEMP/preview.md
 
-      - run: pnpm --dir tooling exec tsx tegami.mts pr comment preview.md
+      - run: pnpm --dir tooling exec tsx tegami.mts pr comment $RUNNER_TEMP/preview.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
