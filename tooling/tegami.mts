@@ -4,6 +4,7 @@ import { runCli } from "tegami/cli";
 import { github } from "tegami/plugins/github";
 import { releaseLines, currentBranch } from "./plugins/release-lines.ts";
 import { exitPrerelease, exitPrereleaseRequested } from "./plugins/exit-prerelease.ts";
+import { canaryAhead } from "./plugins/canary-ahead.ts";
 
 const cwd = path.resolve(import.meta.dirname, "..");
 const branch = currentBranch();
@@ -33,6 +34,7 @@ const paper = tegami({
             },
     }),
     releaseLines(branch),
+    canaryAhead(isCanary ? "canary" : undefined),
     exitPrerelease(),
   ],
 });
