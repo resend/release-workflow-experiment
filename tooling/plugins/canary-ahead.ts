@@ -44,7 +44,7 @@ export function canaryAhead(prerelease: string | undefined): TegamiPlugin {
         const releasePart = `${semver.major(next)}.${semver.minor(next)}.${semver.patch(next)}`;
         if (semver.gt(releasePart, highest)) continue;
 
-        const bumped = semver.inc(highest, d.type ?? "patch", prerelease, "0");
+        const bumped = semver.inc(highest, `pre${d.type ?? "patch"}`, prerelease, "0");
         d.bumpVersion = () => bumped ?? undefined;
         d.bumpReasons ??= new Set();
         d.bumpReasons.add(`stable ${highest} is already published, moving past it`);
@@ -55,6 +55,7 @@ export function canaryAhead(prerelease: string | undefined): TegamiPlugin {
           for (const id of consumedChangelogIds(this.cwd, tag)) {
             if (!draft.getChangelog(id)) continue;
             draft.deleteChangelog(id);
+            d.changelogs = d.changelogs?.filter((entry) => entry.id !== id);
             rmSync(path.join(this.changelogDir, id), { force: true });
             d.bumpReasons.add(`dropped ${id}, already shipped in ${version}`);
           }
