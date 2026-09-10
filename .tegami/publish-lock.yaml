@@ -1,5 +1,5 @@
 core:changelogs:
-  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    type: major\n---\n\n# The module no longer is the version string\n\nUse `.version` instead.\n"
+  - content: "---\npackages:\n  npm:release-workflow-experiment:\n    replay:\n      - exit-prerelease(npm:release-workflow-experiment)\n---\n\n# The module no longer is the version string\n\nUse `.version` instead.\n"
     filename: major-2.md
     v: 0.0.0
 core:packages:
@@ -8,7 +8,5 @@ core:packages:
     id: npm:release-workflow-experiment
     updated: true
 npm:packages:
-  - distTag: canary
+  - distTag: latest
     id: npm:release-workflow-experiment
-resend:exit-prerelease:
-  - requested: true
