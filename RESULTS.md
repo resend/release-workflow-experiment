@@ -77,3 +77,18 @@ The GitHub release side failed the way the RFC predicted, then failed again in a
 - tegami's `GithubRelease` type has `title`, `notes` and `prerelease` only. No `make_latest`. The clean fix is an upstream PR adding it, so the release is created right instead of patched afterwards.
 
 PRs: https://github.com/resend/release-workflow-experiment/pull/21 and https://github.com/resend/release-workflow-experiment/pull/23. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34525386274
+
+## Scenario 5: minor backport that overtakes canary
+
+Done, after two plugin bugs. PR 26 added `shout()` as a minor with `backport-to: [1]`. The bot cherry-picked it onto `release-1`, which sat at `1.1.0`, tegami drafted `1.2.0` as `latest` and it published. Canary at that moment had drafted `1.1.1-canary.1`, tegami's counter-only behaviour for prerelease lines, which would sort below the new stable.
+
+The canary-ahead plugin then did its job on the next canary draft: `1.1.1-canary.0` became `1.3.0-canary.0`, `add-shout.md` was dropped because `1.2.0`'s publish lock lists it as consumed, and `readme-results.md` stayed because `1.2.0` never shipped it. Canary published `1.3.0-canary.0`.
+
+What went wrong on the way:
+
+- `semver.inc(v, "minor", "canary")` ignores the identifier. The first draft was a plain `1.3.0`, tegami read a stable version on a prerelease line as a graduation and replayed every entry into the changelog. It has to be `preminor`.
+- `Draft.deleteChangelog` only removes the entry from the draft's map. The package draft keeps its own list, so the dropped entry still rendered. The plugin removes it from both.
+- The plugin reads stable versions from git tags, not the registry. Tags are pushed in the same run that publishes, the registry lags by minutes, and this plugin runs seconds after the release branch publishes.
+- The "Re-draft canary" dispatch from the release branch still fails with 403. The app needs the Actions permission. I dispatched by hand. Until that permission is added, canary catches up on its next push instead, which leaves a window where a stale canary version PR could be merged.
+
+Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34525958085 (release-1), https://github.com/resend/release-workflow-experiment/actions/runs/34526225115 (canary re-draft), https://github.com/resend/release-workflow-experiment/actions/runs/34526308530 (canary publish)
