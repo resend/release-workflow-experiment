@@ -92,3 +92,17 @@ What went wrong on the way:
 - The "Re-draft canary" dispatch from the release branch still fails with 403. The app needs the Actions permission. I dispatched by hand. Until that permission is added, canary catches up on its next push instead, which leaves a window where a stale canary version PR could be merged.
 
 Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34525958085 (release-1), https://github.com/resend/release-workflow-experiment/actions/runs/34526225115 (canary re-draft), https://github.com/resend/release-workflow-experiment/actions/runs/34526308530 (canary publish)
+
+## Scenario 6: refusals
+
+Done. A check on every PR reads the changesets in the diff and fails with one line per problem:
+
+- PR 31, changeset only: "backport-to needs the code change in the same PR, this PR only touches .tegami/".
+- PR 32, patch with `backport-to: [1]`: "a patch can only backport to an X.Y line".
+- PR 33, minor with `backport-to: [1.0]`: "a minor can only backport to a major".
+
+I merged PR 31 anyway to test the second line of defense. The Backport workflow refused the commit, commented on the PR, and pushed nothing. The junk changeset it left on canary is removed in this PR.
+
+The check is not a required status in this repo's ruleset. It should be in the real one, so the merge-time refusal only ever fires for commits that reached canary some other way.
+
+PRs: https://github.com/resend/release-workflow-experiment/pull/31, https://github.com/resend/release-workflow-experiment/pull/32, https://github.com/resend/release-workflow-experiment/pull/33. Refusal run: https://github.com/resend/release-workflow-experiment/actions/runs/34526613060
