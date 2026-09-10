@@ -71,9 +71,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app.outputs.token }}
 
+      - name: Re-draft canary
+        if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'
+        run: gh workflow run publish.yml --ref canary
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+
       - name: Mark GitHub release as not latest
         if: steps.tegami.outputs.published == 'true' && steps.tegami.outputs.took_latest == 'false' && github.ref_name != 'canary'
-        run: gh release edit "$(node -p "p=require('./package.json');p.name+'@'+p.version")" --latest=false
+        run: |
+          TAG="$(node -p "p=require('./package.json');p.name+'@'+p.version")"
+          for i in $(seq 1 12); do
+            gh release edit "$TAG" --latest=false && exit 0
+            sleep 5
+          done
+          exit 1
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
 
@@ -94,8 +106,3 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
 
-      - name: Re-draft canary
-        if: startsWith(github.ref_name, 'release-') && steps.tegami.outputs.published == 'true'
-        run: gh workflow run publish.yml --ref canary
-        env:
-          GH_TOKEN: ${{ steps.app.outputs.token }}

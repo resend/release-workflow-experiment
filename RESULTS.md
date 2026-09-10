@@ -63,3 +63,17 @@ A gap the RFC does not cover: after graduation canary sat at `1.1.0-canary.3` wh
 The stored copy of the changeset in the lock drops the `exit-prerelease` key, as predicted in the RFC. Recording it in the lock at draft time is what made the publish step see it.
 
 PR: https://github.com/resend/release-workflow-experiment/pull/18. Runs: https://github.com/resend/release-workflow-experiment/actions/runs/34524683266 (canary) and https://github.com/resend/release-workflow-experiment/actions/runs/34524720200 (main, second attempt).
+
+## Scenario 4: patch backport after the next stable
+
+Done. With `latest` at `1.1.0`, PR 21 carried a patch with `backport-to: [1.0]`. The bot cherry-picked it onto the existing `release-1.0`, tegami drafted `1.0.2` with dist-tag `release-1.0`, and publishing left npm's `latest` at `1.1.0`. On npm the dist-tags read `latest: 1.1.0, release-1.0: 1.0.2`, which is the RFC's table row exactly.
+
+Canary at the same time drafted `1.1.1-canary.0` from `1.1.0`, since the changeset was a patch. That is correct and shows the fast-forward of canary after graduation working.
+
+The GitHub release side failed the way the RFC predicted, then failed again in a way it did not:
+
+- tegami created the `1.0.2` release and GitHub marked it Latest, over `1.1.0`.
+- Our `gh release edit --latest=false` step ran seconds later and got "release not found". GitHub's release-by-tag lookup lags its own creation. The step now retries for a minute. I restored `1.1.0` as Latest by hand.
+- tegami's `GithubRelease` type has `title`, `notes` and `prerelease` only. No `make_latest`. The clean fix is an upstream PR adding it, so the release is created right instead of patched afterwards.
+
+PRs: https://github.com/resend/release-workflow-experiment/pull/21 and https://github.com/resend/release-workflow-experiment/pull/23. Run: https://github.com/resend/release-workflow-experiment/actions/runs/34525386274
